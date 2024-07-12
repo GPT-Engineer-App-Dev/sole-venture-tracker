@@ -169,78 +169,80 @@ const Index = () => {
               <TableCell>{transaction.type}</TableCell>
               <TableCell>{transaction.brand}</TableCell>
               <TableCell>
-                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="mr-2" onClick={() => handleEdit(transaction)}>Edit</Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Edit Transaction</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleEditSubmit} className="space-y-4">
-                      <div>
-                        <Label htmlFor="edit-date">Date</Label>
-                        <Input
-                          type="date"
-                          id="edit-date"
-                          name="date"
-                          value={editingTransaction?.date || ''}
-                          onChange={handleEditInputChange}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="edit-amount">Amount</Label>
-                        <Input
-                          type="number"
-                          id="edit-amount"
-                          name="amount"
-                          value={editingTransaction?.amount || ''}
-                          onChange={handleEditInputChange}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="edit-type">Type</Label>
-                        <Select 
-                          name="type" 
-                          onValueChange={(value) => handleEditSelectChange("type", value)} 
-                          value={editingTransaction?.type || ''}
-                          required
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="income">Income</SelectItem>
-                            <SelectItem value="expense">Expense</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="edit-brand">Brand</Label>
-                        <Select 
-                          name="brand" 
-                          onValueChange={(value) => handleEditSelectChange("brand", value)} 
-                          value={editingTransaction?.brand || ''}
-                          required
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select brand" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Nike">Nike</SelectItem>
-                            <SelectItem value="Adidas">Adidas</SelectItem>
-                            <SelectItem value="Puma">Puma</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <Button type="submit">Update Transaction</Button>
-                    </form>
-                  </DialogContent>
-                </Dialog>
-                <Button variant="destructive" size="sm" onClick={() => handleDelete(transaction.id)}>Delete</Button>
+                <div className="flex space-x-2">
+                  <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" onClick={() => handleEdit(transaction)}>Edit</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Transaction</DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={handleEditSubmit} className="space-y-4">
+                        <div>
+                          <Label htmlFor="edit-date">Date</Label>
+                          <Input
+                            type="date"
+                            id="edit-date"
+                            name="date"
+                            value={editingTransaction?.date || ''}
+                            onChange={handleEditInputChange}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="edit-amount">Amount</Label>
+                          <Input
+                            type="number"
+                            id="edit-amount"
+                            name="amount"
+                            value={editingTransaction?.amount || ''}
+                            onChange={handleEditInputChange}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="edit-type">Type</Label>
+                          <Select 
+                            name="type" 
+                            onValueChange={(value) => handleEditSelectChange("type", value)} 
+                            value={editingTransaction?.type || ''}
+                            required
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="income">Income</SelectItem>
+                              <SelectItem value="expense">Expense</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="edit-brand">Brand</Label>
+                          <Select 
+                            name="brand" 
+                            onValueChange={(value) => handleEditSelectChange("brand", value)} 
+                            value={editingTransaction?.brand || ''}
+                            required
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select brand" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Nike">Nike</SelectItem>
+                              <SelectItem value="Adidas">Adidas</SelectItem>
+                              <SelectItem value="Puma">Puma</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button type="submit">Update Transaction</Button>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                  <Button variant="destructive" size="sm" onClick={() => handleDelete(transaction.id)}>Delete</Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
