@@ -44,37 +44,39 @@ const Index = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (editingTransaction) {
-      setEditingTransaction((prev) => ({ ...prev, [name]: value }));
-    } else {
-      setNewTransaction((prev) => ({ ...prev, [name]: value }));
-    }
+    setNewTransaction((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSelectChange = (name, value) => {
-    if (editingTransaction) {
-      setEditingTransaction((prev) => ({ ...prev, [name]: value }));
-    } else {
-      setNewTransaction((prev) => ({ ...prev, [name]: value }));
-    }
+    setNewTransaction((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (editingTransaction) {
-      setTransactions(transactions.map(t => t.id === editingTransaction.id ? editingTransaction : t));
-      setEditingTransaction(null);
-      setIsModalOpen(false); // Close the modal after updating
-    } else {
-      const id = transactions.length + 1;
-      setTransactions([...transactions, { id, ...newTransaction }]);
-      setNewTransaction({ date: "", amount: "", type: "", brand: "" });
-    }
+    const id = transactions.length + 1;
+    setTransactions([...transactions, { id, ...newTransaction }]);
+    setNewTransaction({ date: "", amount: "", type: "", brand: "" });
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditingTransaction((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditSelectChange = (name, value) => {
+    setEditingTransaction((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleEdit = (transaction) => {
     setEditingTransaction(transaction);
     setIsModalOpen(true);
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    setTransactions(transactions.map(t => t.id === editingTransaction.id ? editingTransaction : t));
+    setEditingTransaction(null);
+    setIsModalOpen(false);
   };
 
   const handleDelete = (id) => {
@@ -93,7 +95,7 @@ const Index = () => {
               type="date"
               id="date"
               name="date"
-              value={editingTransaction ? editingTransaction.date : newTransaction.date}
+              value={newTransaction.date}
               onChange={handleInputChange}
               required
             />
@@ -104,7 +106,7 @@ const Index = () => {
               type="number"
               id="amount"
               name="amount"
-              value={editingTransaction ? editingTransaction.amount : newTransaction.amount}
+              value={newTransaction.amount}
               onChange={handleInputChange}
               required
             />
@@ -114,7 +116,7 @@ const Index = () => {
             <Select 
               name="type" 
               onValueChange={(value) => handleSelectChange("type", value)} 
-              value={editingTransaction ? editingTransaction.type : newTransaction.type}
+              value={newTransaction.type}
               required
             >
               <SelectTrigger>
@@ -131,7 +133,7 @@ const Index = () => {
             <Select 
               name="brand" 
               onValueChange={(value) => handleSelectChange("brand", value)} 
-              value={editingTransaction ? editingTransaction.brand : newTransaction.brand}
+              value={newTransaction.brand}
               required
             >
               <SelectTrigger>
@@ -146,7 +148,7 @@ const Index = () => {
             </Select>
           </div>
         </div>
-        <Button type="submit">{editingTransaction ? 'Update' : 'Add'} Transaction</Button>
+        <Button type="submit">Add Transaction</Button>
       </form>
 
       <Table>
@@ -175,7 +177,7 @@ const Index = () => {
                     <DialogHeader>
                       <DialogTitle>Edit Transaction</DialogTitle>
                     </DialogHeader>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleEditSubmit} className="space-y-4">
                       <div>
                         <Label htmlFor="edit-date">Date</Label>
                         <Input
@@ -183,7 +185,7 @@ const Index = () => {
                           id="edit-date"
                           name="date"
                           value={editingTransaction?.date || ''}
-                          onChange={handleInputChange}
+                          onChange={handleEditInputChange}
                           required
                         />
                       </div>
@@ -194,7 +196,7 @@ const Index = () => {
                           id="edit-amount"
                           name="amount"
                           value={editingTransaction?.amount || ''}
-                          onChange={handleInputChange}
+                          onChange={handleEditInputChange}
                           required
                         />
                       </div>
@@ -202,7 +204,7 @@ const Index = () => {
                         <Label htmlFor="edit-type">Type</Label>
                         <Select 
                           name="type" 
-                          onValueChange={(value) => handleSelectChange("type", value)} 
+                          onValueChange={(value) => handleEditSelectChange("type", value)} 
                           value={editingTransaction?.type || ''}
                           required
                         >
@@ -219,7 +221,7 @@ const Index = () => {
                         <Label htmlFor="edit-brand">Brand</Label>
                         <Select 
                           name="brand" 
-                          onValueChange={(value) => handleSelectChange("brand", value)} 
+                          onValueChange={(value) => handleEditSelectChange("brand", value)} 
                           value={editingTransaction?.brand || ''}
                           required
                         >
