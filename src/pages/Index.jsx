@@ -40,6 +40,7 @@ const Index = () => {
   });
 
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -63,6 +64,7 @@ const Index = () => {
     if (editingTransaction) {
       setTransactions(transactions.map(t => t.id === editingTransaction.id ? editingTransaction : t));
       setEditingTransaction(null);
+      setIsModalOpen(false); // Close the modal after updating
     } else {
       const id = transactions.length + 1;
       setTransactions([...transactions, { id, ...newTransaction }]);
@@ -72,6 +74,7 @@ const Index = () => {
 
   const handleEdit = (transaction) => {
     setEditingTransaction(transaction);
+    setIsModalOpen(true);
   };
 
   const handleDelete = (id) => {
@@ -164,7 +167,7 @@ const Index = () => {
               <TableCell>{transaction.type}</TableCell>
               <TableCell>{transaction.brand}</TableCell>
               <TableCell>
-                <Dialog>
+                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm" className="mr-2" onClick={() => handleEdit(transaction)}>Edit</Button>
                   </DialogTrigger>
