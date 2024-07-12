@@ -17,6 +17,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Index = () => {
   const [transactions, setTransactions] = useState([
@@ -32,20 +39,43 @@ const Index = () => {
     brand: "",
   });
 
+  const [editingTransaction, setEditingTransaction] = useState(null);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewTransaction((prev) => ({ ...prev, [name]: value }));
+    if (editingTransaction) {
+      setEditingTransaction((prev) => ({ ...prev, [name]: value }));
+    } else {
+      setNewTransaction((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSelectChange = (name, value) => {
-    setNewTransaction((prev) => ({ ...prev, [name]: value }));
+    if (editingTransaction) {
+      setEditingTransaction((prev) => ({ ...prev, [name]: value }));
+    } else {
+      setNewTransaction((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const id = transactions.length + 1;
-    setTransactions([...transactions, { id, ...newTransaction }]);
-    setNewTransaction({ date: "", amount: "", type: "", brand: "" });
+    if (editingTransaction) {
+      setTransactions(transactions.map(t => t.id === editingTransaction.id ? editingTransaction : t));
+      setEditingTransaction(null);
+    } else {
+      const id = transactions.length + 1;
+      setTransactions([...transactions, { id, ...newTransaction }]);
+      setNewTransaction({ date: "", amount: "", type: "", brand: "" });
+    }
+  };
+
+  const handleEdit = (transaction) => {
+    setEditingTransaction(transaction);
+  };
+
+  const handleDelete = (id) => {
+    setTransactions(transactions.filter(t => t.id !== id));
   };
 
   return (
@@ -60,7 +90,7 @@ const Index = () => {
               type="date"
               id="date"
               name="date"
-              value={newTransaction.date}
+              value={editingTransaction ? editingTransaction.date : newTransaction.date}
               onChange={handleInputChange}
               required
             />
@@ -71,14 +101,19 @@ const Index = () => {
               type="number"
               id="amount"
               name="amount"
-              value={newTransaction.amount}
+              value={editingTransaction ? editingTransaction.amount : newTransaction.amount}
               onChange={handleInputChange}
               required
             />
           </div>
           <div>
             <Label htmlFor="type">Type</Label>
-            <Select name="type" onValueChange={(value) => handleSelectChange("type", value)} required>
+            <Select 
+              name="type" 
+              onValueChange={(value) => handleSelectChange("type", value)} 
+              value={editingTransaction ? editingTransaction.type : newTransaction.type}
+              required
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
@@ -90,7 +125,12 @@ const Index = () => {
           </div>
           <div>
             <Label htmlFor="brand">Brand</Label>
-            <Select name="brand" onValueChange={(value) => handleSelectChange("brand", value)} required>
+            <Select 
+              name="brand" 
+              onValueChange={(value) => handleSelectChange("brand", value)} 
+              value={editingTransaction ? editingTransaction.brand : newTransaction.brand}
+              required
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select brand" />
               </SelectTrigger>
@@ -103,7 +143,7 @@ const Index = () => {
             </Select>
           </div>
         </div>
-        <Button type="submit">Add Transaction</Button>
+        <Button type="submit">{editingTransaction ? 'Update' : 'Add'} Transaction</Button>
       </form>
 
       <Table>
@@ -124,8 +164,78 @@ const Index = () => {
               <TableCell>{transaction.type}</TableCell>
               <TableCell>{transaction.brand}</TableCell>
               <TableCell>
-                <Button variant="outline" size="sm" className="mr-2">Edit</Button>
-                <Button variant="destructive" size="sm">Delete</Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="mr-2" onClick={() => handleEdit(transaction)}>Edit</Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Edit Transaction</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="edit-date">Date</Label>
+                        <Input
+                          type="date"
+                          id="edit-date"
+                          name="date"
+                          value={editingTransaction?.date || ''}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-amount">Amount</Label>
+                        <Input
+                          type="number"
+                          id="edit-amount"
+                          name="amount"
+                          value={editingTransaction?.amount || ''}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-type">Type</Label>
+                        <Select 
+                          name="type" 
+                          onValueChange={(value) => handleSelectChange("type", value)} 
+                          value={editingTransaction?.type || ''}
+                          required
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="income">Income</SelectItem>
+                            <SelectItem value="expense">Expense</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-brand">Brand</Label>
+                        <Select 
+                          name="brand" 
+                          onValueChange={(value) => handleSelectChange("brand", value)} 
+                          value={editingTransaction?.brand || ''}
+                          required
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select brand" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Nike">Nike</SelectItem>
+                            <SelectItem value="Adidas">Adidas</SelectItem>
+                            <SelectItem value="Puma">Puma</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Button type="submit">Update Transaction</Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+                <Button variant="destructive" size="sm" onClick={() => handleDelete(transaction.id)}>Delete</Button>
               </TableCell>
             </TableRow>
           ))}
